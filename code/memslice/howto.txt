@@ -1,0 +1,74 @@
+Using memslice:
+
+clang mac_umemslice.c -o memslice
+
+bash-3.2# ./memslice -p 13396
+0 [0] @@ r-x addr 0x109829000 size 4096
+0 [0] @@ rw- addr 0x10982a000 size 4096
+0 [0] @@ r-- addr 0x10982b000 size 8192
+0 [0] @@ r-- addr 0x10982d000 size 4096
+0 [0] @@ rw- addr 0x10982e000 size 4096
+0 [0] @@ --- addr 0x10982f000 size 4096
+0 [0] @@ rw- addr 0x109830000 size 86016
+0 [0] @@ --- addr 0x109845000 size 4096
+0 [0] @@ --- addr 0x109846000 size 4096
+0 [0] @@ rw- addr 0x109847000 size 86016
+0 [0] @@ --- addr 0x10985c000 size 4096
+0 [0] @@ r-- addr 0x10985d000 size 4096
+0 [0] @@ rw- addr 0x10985e000 size 4096
+0 [0] @@ rw- addr 0x7ffb58c00000 size 1048576
+0 [0] @@ rw- addr 0x7ffb59000000 size 8388608
+0 [0] @@ --- addr 0x7fff523d7000 size 58720256
+0 [0] @@ rw- addr 0x7fff55bd7000 size 8384512
+0 [0] @@ rw- addr 0x7fff563d6000 size 4096
+0 [0] @@ r-x addr 0x7fff6a367000 size 212992
+0 [0] @@ rw- addr 0x7fff6a39b000 size 8192
+0 [0] @@ rw- addr 0x7fff6a39d000 size 249856
+0 [0] @@ r-- addr 0x7fff6a3da000 size 81920
+0 [0] @@ rw- addr 0x7fff73c7c000 size 1589248
+1 [0] @@ r-- addr 0x7fff73e00000 size 2097152
+0 [1] @@ rw- addr 0x7fff73e00000 size 2097152
+0 [0] @@ rw- addr 0x7fff74000000 size 2097152
+1 [0] @@ r-- addr 0x7fff74200000 size 10485760
+0 [1] @@ rw- addr 0x7fff74200000 size 10485760
+0 [0] @@ rw- addr 0x7fff74c00000 size 2097152
+0 [0] @@ rw- addr 0x7fff74e00000 size 2097152
+1 [0] @@ r-- addr 0x7fff75000000 size 2097152
+0 [1] @@ rw- addr 0x7fff75000000 size 2097152
+0 [0] @@ rw- addr 0x7fff75200000 size 2097152
+0 [0] @@ rw- addr 0x7fff75400000 size 2097152
+1 [0] @@ r-- addr 0x7fff75600000 size 2097152
+0 [1] @@ rw- addr 0x7fff75600000 size 2097152
+0 [0] @@ rw- addr 0x7fff75800000 size 2097152
+1 [0] @@ r-- addr 0x7fff75a00000 size 4194304
+0 [1] @@ rw- addr 0x7fff75a00000 size 4194304
+0 [0] @@ rw- addr 0x7fff75e00000 size 2097152
+0 [0] @@ rw- addr 0x7fff76000000 size 2097152
+1 [0] @@ r-- addr 0x7fff76200000 size 165675008
+0 [1] @@ rw- addr 0x7fff76200000 size 2097152
+0 [1] @@ rw- addr 0x7fff76400000 size 913408
+1 [0] @@ r-- addr 0x7fff80000000 size 1073741824
+0 [1] @@ r-x addr 0x7fff83c7c000 size 76697600
+0 [1] @@ r-x addr 0x7fff885a1000 size 4096
+0 [1] @@ r-x addr 0x7fff885a2000 size 114335744
+0 [1] @@ r-x addr 0x7fff8f2ac000 size 4096
+0 [1] @@ r-x addr 0x7fff8f2ad000 size 13279232
+0 [1] @@ r-x addr 0x7fff8ff57000 size 4096
+0 [1] @@ r-x addr 0x7fff8ff58000 size 4448256
+0 [1] @@ r-x addr 0x7fff90396000 size 4096
+0 [1] @@ r-x addr 0x7fff90397000 size 22872064
+0 [1] @@ r-- addr 0x7fff91967000 size 68644864
+0 [1] @@ r-- addr 0x7fff95ade000 size 1675264
+1 [0] @@ r-- addr 0x7fffc0000000 size 1071644672
+1 [0] @@ r-- addr 0x7fffffe00000 size 4096
+0 [1] @@ r-- addr 0x7fffffe00000 size 4096
+0 [1] @@ r-x addr 0x7fffffe88000 size 4096
+0 [1] @@ r-x addr 0x7fffffe89000 size 4096
+
+bash-3.2# ./memslice -p 13396 -r 0x7fff76200000 -l 4 | hexdump -C
+00000000  f0 00 00 00                                       |....|
+00000004
+bash-3.2# echo AAAA | ./memslice -p 13396 -w 0x7fff76200000 -l 4 
+bash-3.2# ./memslice -p 13396 -r 0x7fff76200000 -l 4 | hexdump -C
+00000000  41 41 41 41                                       |AAAA|
+00000004
