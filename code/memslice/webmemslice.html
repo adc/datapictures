@@ -1,0 +1,43 @@
+<html>
+<title>Your computer memory, in a bmp, in your browser</title>
+<head>
+<script type="text/javascript" src="file.list?pid=13396"></script>
+<script>
+
+var pid = 13396
+var start = 0x7fff76280000;
+var limit = 913408;
+var end = start + limit;
+var cur = start;
+var INTERVAL = 4096;
+
+function next()
+{
+	fun = document.getElementById('fun');
+
+	fun.src="a.fun?pid="+pid+"&address="+cur+"&length="+INTERVAL;
+
+	if (cur < end)
+	{
+		cur = cur + INTERVAL;
+	}
+	else
+	{
+		cur = start;
+	}
+}
+
+function go()
+{	
+	regions = JSON.parse(regions)
+	//
+	// TBD: parse regions to start running through mem
+	//
+	setInterval(next, 1000);
+}
+</script>
+</head>
+<body onload=go()>
+	<img id="fun" src=""/>
+</body>
+</html>
