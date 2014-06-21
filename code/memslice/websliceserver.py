@@ -88,6 +88,20 @@ def getRegions(args):
     else:
         return []
 
+def listProcesses(args):
+    proc = subprocess.Popen(['ps','-A'], stdout=subprocess.PIPE)
+    data = proc.stdout.read().splitlines()
+    procs = []
+    for entry in data:
+        parts = entry.split()
+        parts[3] = ' '.join(parts[3:])
+        pid, cmd = parts[0], parts[3]
+        if pid == 'PID': continue
+        procs += [(int(pid), cmd)]
+    #sort the processes by pid
+    procs.sort()
+    return procs
+
 def convertArgs(argDict):
     n = {}
     for key in argDict:
@@ -115,9 +129,15 @@ class MyHandler(SimpleHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-type','text/javascript')
                 self.end_headers()
-                self.wfile.write("regions = '")
                 json.dump(regionInfo, self.wfile)                
-                self.wfile.write("';")
+                return
+            elif parsedParams.path.endswith(".listproc"):
+                #get the list of processes on the system
+                procListing = listProcesses(args)
+                self.send_response(200)
+                self.send_header('Content-type','text/javascript')
+                self.end_headers()
+                json.dump(procListing, self.wfile)
                 return
             SimpleHTTPRequestHandler.do_GET(self)
             

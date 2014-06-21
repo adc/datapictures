@@ -1,43 +1,129 @@
 <html>
 <title>Your computer memory, in a bmp, in your browser</title>
 <head>
-<script type="text/javascript" src="file.list?pid=13396"></script>
 <script>
 
-var pid = 13396
-var start = 0x7fff76280000;
-var limit = 913408;
-var end = start + limit;
-var cur = start;
+//http://stackoverflow.com/questions/9838812/how-can-i-open-a-json-file-in-javascript-without-jquery
+function loadJSON(path, success, error)
+{
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function()
+    {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                if (success)
+                    success(JSON.parse(xhr.responseText));
+            } else {
+                if (error)
+                    error(xhr);
+            }
+        }
+    };
+    xhr.open("GET", path, true);
+    xhr.send();
+}
+
+var TargetPid;
+var TargetStart;
+var TargetLimit;
+var TargetEnd;
+var TargetCur;
 var INTERVAL = 4096;
+
+var dasTimer;
 
 function next()
 {
 	fun = document.getElementById('fun');
 
-	fun.src="a.fun?pid="+pid+"&address="+cur+"&length="+INTERVAL;
+	fun.src="a.fun?pid="+TargetPid+"&address="+TargetCur+"&length="+INTERVAL;
 
-	if (cur < end)
+	if (TargetCur < TargetEnd)
 	{
-		cur = cur + INTERVAL;
+		TargetCur = TargetCur + INTERVAL;
 	}
 	else
 	{
-		cur = start;
+		TargetCur = TargetStart;
 	}
+}
+
+function loadRegion(address, size)
+{
+	TargetStart = address;
+	TargetCur = TargetStart;
+	TargetLimit = size;
+	TargetEnd = address + size;
+	
+	if (dasTimer != null)
+	{
+		clearInterval(dasTimer);
+	}
+	dasTimer = setInterval(next, 500);
+}
+
+function loadRegionLink(addr, size)
+{
+	return "<a href=javascript:loadRegion("+addr+","+size+""+")>"+addr+"</a>";	
+}
+
+function listRegions(data)
+{
+	rl = document.getElementById("regionlisting");
+	ul = document.createElement('ul');
+	for (var i = 0; i < data.length; i++)
+	{
+		li = document.createElement('li');
+		li.innerHTML = loadRegionLink(data[i][1], data[i][2]) + "  ->  " + data[i][0] + " " + data[i][1] + "  " + data[i][2];
+		ul.appendChild(li);
+	}
+	rl.innerHTML = '';
+	rl.appendChild(ul);
+}
+
+function loadRegions(pid)
+{
+	TargetPid = pid;
+
+	loadJSON("regions.list?pid="+pid,
+			 listRegions,
+	         function(xhr) { console.error(xhr); }
+	);
+
+}
+function regionsLink(pid)
+{
+	return "<a href=javascript:loadRegions("+pid+")>"+pid+"</a>";
+}
+function loadProcesses(data) 
+{
+	pl = document.getElementById("proclisting");
+	ul = document.createElement('ul');
+	for (var i = 0; i < data.length; i++)
+	{
+		li = document.createElement('li');
+		li.innerHTML = regionsLink(data[i][0]) + "  ->  " + data[i][1];
+		ul.appendChild(li);
+	}
+	pl.innerHTML = '';
+	pl.appendChild(ul);
 }
 
 function go()
 {	
-	regions = JSON.parse(regions)
-	//
-	// TBD: parse regions to start running through mem
-	//
-	setInterval(next, 1000);
+	loadJSON('file.listproc',
+			 loadProcesses,
+	         function(xhr) { console.error(xhr); }
+	);
 }
+
 </script>
 </head>
 <body onload=go()>
 	<img id="fun" src=""/>
+	<div id="regionlisting">
+	</div>
+	<div id="proclisting">
+	</div>
 </body>
 </html>
