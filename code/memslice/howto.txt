@@ -72,3 +72,10 @@ bash-3.2# echo AAAA | ./memslice -p 13396 -w 0x7fff76200000 -l 4
 bash-3.2# ./memslice -p 13396 -r 0x7fff76200000 -l 4 | hexdump -C
 00000000  41 41 41 41                                       |AAAA|
 00000004
+
+
+
+Using the web server proglet:
+python websliceserver.py #as root again
+
+

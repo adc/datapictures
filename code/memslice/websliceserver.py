@@ -145,7 +145,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             pass            
 def main():
     try:
-        webServ = HTTPServer( ('',8000), MyHandler )
+        webServ = HTTPServer( ('localhost',8000), MyHandler )
         print( 'Started HTTP Server' )
         webServ.serve_forever()
     except KeyboardInterrupt:
